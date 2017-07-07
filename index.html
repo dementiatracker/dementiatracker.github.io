@@ -1,0 +1,97 @@
+<html>
+<head>
+  <title>Dementia Tracker</title>
+  <style>
+    .button {
+      background-color: #4CAF50; /* Green */
+      border: none;
+      color: white;
+      margin: 15px 15px;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCffFvsqBs4KuTRjogPnwhpVXMhS4xI23o"></script>
+  <script type="text/javascript" src="https://hpneo.github.io/gmaps/gmaps.js"></script>
+
+  <script type="text/javascript">
+    function send_alarm() {
+      alert('ATTN!!! Patient Foo Bar is out of Safe Zone now!');
+    }
+  </script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    var g_map;
+
+    g_map = new GMaps({
+      div: '#map',
+      lat: 1.3458142,
+      lng: 103.9317639,
+      mapType: 'satellite',
+      width: 800,
+      height: 500,
+      zoom: 17
+    });
+
+    var p = [
+      [1.3450000, 103.9310000],
+      [1.3450000, 103.9320000],
+      [1.3455000, 103.9330000],
+      [1.3460000, 103.9320000],
+      [1.3465000, 103.9315000],
+      [1.3460000, 103.9310000]
+    ];
+    var path=[];
+    for(var i in p){
+      path.push(new google.maps.LatLng(p[i][0], p[i][1]));
+    }
+
+    var polygon = g_map.drawPolygon({
+      paths: path,
+      strokeColor: '#BBD8E9',
+      strokeOpacity: 1,
+      strokeWeight: 3,
+      fillColor: '#BBD8E9',
+      fillOpacity: 0.6
+    });
+
+    var marker = g_map.addMarker({
+      label: 'Patient Foo Bar',
+      lat: 1.3452000,
+      lng: 103.9312000,
+      draggable: true,
+      fences: [polygon],
+      outside: function(m, f){
+        send_alarm();
+      }
+    });
+
+    $('#btn_out').click(function() {
+      var newPos = new google.maps.LatLng(1.3445000, 103.9305000);
+      marker.setPosition(newPos);
+
+      setTimeout(function() {
+        if(!g_map.checkGeofence(newPos.latitude, newPos.longitude, polygon)) {
+          send_alarm();
+        }
+      }, 100)
+    });
+    $('#btn_in').click(function() {
+      var newPos = new google.maps.LatLng(1.3455000, 103.9315000);
+      marker.setPosition(newPos);
+    });
+  });
+  </script>
+  
+  <div id="map"></div>
+  <button id="btn_out" class="button">Get Out</button>
+  <button id="btn_in"  class="button">Get In</button>
+</body>
+</html>
