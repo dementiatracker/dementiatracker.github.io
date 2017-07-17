@@ -157,6 +157,9 @@ function init() {
   firebase.initializeApp(g_FIREBASE_CONFIG);
   var db = firebase.database();
 
+  var deviceID = getUrlParameter('deviceid');
+  if(deviceID) g_DEVICE_ID = deviceID;
+
   // Keep getting device location
   startMonitor = getLocationMonitor(db);
   startMonitor();
