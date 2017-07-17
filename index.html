@@ -38,8 +38,8 @@
   };
   firebase.initializeApp(config);
   var database  = firebase.database();
-  var deviceLat = database.ref('/result/2102B1/deviceLat').once('value');
-  var deviceLng = database.ref('/result/2102B1/deviceLng').once('value');
+  var deviceLat = database.ref('/result/2C2F3C/deviceLat').once('value');
+  var deviceLng = database.ref('/result/2C2F3C/deviceLng').once('value');
 
   $(document).ready(function(){
     deviceLat.then(function(latData) {
