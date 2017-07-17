@@ -78,8 +78,8 @@
 
         var marker = g_map.addMarker({
           label: 'Patient Foo Bar',
-          lat: 1.3452000,
-          lng: 103.9312000,
+          lat: latData.val(),
+          lng: lngData.val(),
           draggable: true,
           fences: [polygon],
           outside: function(m, f){
