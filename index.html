@@ -1,20 +1,10 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>Dementia Tracker</title>
-  <style>
-    .button {
-      background-color: #4CAF50; /* Green */
-      border: none;
-      color: white;
-      margin: 15px 15px;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      border-radius: 8px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -23,9 +13,30 @@
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/async/2.5.0/async.min.js"></script>
   <script type="text/javascript" src="./main.js"></script>
-  
-  <div id="map"></div>
-  <button id="btn_out" class="button">Get Out</button>
-  <button id="btn_in"  class="button">Get In</button>
+
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+      <div class="navbar-header"><a class="navbar-brand" href="#">Dementia Tracker</a></div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="myinfo" class="alert alert-success" role="alert"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="mymap" style="width: 100%; padding-top: 62.5%;"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center" style="margin-top: 10px">
+        <button id="btn_out" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-log-out"></span> Get Out</button>
+        <button id="btn_in"  class="btn btn-lg btn-success"><span class="glyphicon glyphicon-log-in"></span> Get In</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

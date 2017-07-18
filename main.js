@@ -8,8 +8,9 @@ var g_FIREBASE_CONFIG = {
   messagingSenderId: "612176680517",
 };
 var g_MESSAGES = {
-  noGeoLocation: "Failed to get geolocation",
-  outOfSafeZone: "ATTN!!! Patient Richard is out of Safe Zone now!"
+  noGeoLocation:    "Failed to get geolocation",
+  insideOfSafeZone: "Patient Richard is safe now",
+  outOfSafeZone:    "ATTN!!! Patient Richard is out of Safe Zone now!"
 };
 var g_safeZoneSize = 0.001;
 
@@ -25,7 +26,10 @@ function getUrlParameter(name) {
 };
 
 function sendAlarm(msg) {
-  alert(g_MESSAGES[msg]);
+  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-danger').removeClass('alert-success');
+}
+function showMsg(msg) {
+  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-success').removeClass('alert-danger');
 }
 
 function getDataFromFirebase(db, ref, cb) {
@@ -48,6 +52,16 @@ function getDeviceLng(db, cb) {
   }
 }
 
+function checkPosition(myMap, myPos, myPolygon) {
+  setTimeout(function() {
+    if(myMap.checkGeofence(myPos.latitude, myPos.longitude, myPolygon)) {
+      showMsg("insideOfSafeZone");
+    } else {
+      sendAlarm("outOfSafeZone");
+    }
+  }, 100)
+}
+
 function getMapUpdater() {
   var myMap     = null;
   var myMarker  = null;
@@ -60,12 +74,10 @@ function getMapUpdater() {
 
     if(myMap === null) {
       myMap = new GMaps({
-        div:     '#map',
+        div:     '#mymap',
         mapType: 'satellite',
         lat:     lat,
         lng:     lng,
-        width:   800,
-        height:  500,
         zoom:    17
       });
     }
@@ -111,15 +123,14 @@ function getMapUpdater() {
     $('#btn_out').click(function() {
       var newPos = new google.maps.LatLng(lat - g_safeZoneSize - 0.0001, lng);
       myMarker.setPosition(newPos);
-
-      setTimeout(function() {
-        if(!myMap.checkGeofence(newPos.latitude, newPos.longitude, myPolygon)) {
-          sendAlarm("outOfSafeZone");
-        }
-      }, 100)
+      sendAlarm("outOfSafeZone");
+      //checkPosition(myMap, newPos, myPolygon);
     });
     $('#btn_in').click(function() {
-      myMarker.setPosition(new google.maps.LatLng(lat, lng));
+      var newPos = new google.maps.LatLng(lat, lng);
+      myMarker.setPosition(newPos);
+      showMsg("insideOfSafeZone");
+      //checkPosition(myMap, newPos, myPolygon);
     });
   };
 }
@@ -157,8 +168,8 @@ function init() {
   firebase.initializeApp(g_FIREBASE_CONFIG);
   var db = firebase.database();
 
-  var deviceID = getUrlParameter('deviceid');
-  if(deviceID) g_DEVICE_ID = deviceID;
+  // update info bar
+  showMsg("insideOfSafeZone");
 
   // Keep getting device location
   startMonitor = getLocationMonitor(db);
