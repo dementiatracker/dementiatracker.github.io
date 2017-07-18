@@ -8,9 +8,8 @@ var g_FIREBASE_CONFIG = {
   messagingSenderId: "612176680517",
 };
 var g_MESSAGES = {
-  noGeoLocation:    "Failed to get geolocation",
-  insideOfSafeZone: "Patient Richard is safe now",
-  outOfSafeZone:    "ATTN!!! Patient Richard is out of Safe Zone now!"
+  insideOfSafeZone: "Patient Richard is safe now.",
+  outOfSafeZone:    "Heads up! Patient Richard is out of Safe Zone now."
 };
 var g_safeZoneSize = 0.001;
 
