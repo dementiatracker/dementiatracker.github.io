@@ -119,6 +119,9 @@ function getMapUpdater() {
       fillOpacity: 0.6
     });
 
+    // update info bar
+    showMsg("insideOfSafeZone");
+
     // hook button
     $('#btn_out').click(function() {
       var newPos = new google.maps.LatLng(lat - g_safeZoneSize - 0.0001, lng);
@@ -168,11 +171,8 @@ function init() {
   firebase.initializeApp(g_FIREBASE_CONFIG);
   var db = firebase.database();
 
-  // update info bar
-  showMsg("insideOfSafeZone");
-
   // Keep getting device location
-  startMonitor = getLocationMonitor(db);
+  var startMonitor = getLocationMonitor(db);
   startMonitor();
 }
 
