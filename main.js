@@ -26,10 +26,10 @@ function getUrlParameter(name) {
 };
 
 function sendAlarm(msg) {
-  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-danger').removeClass('alert-success');
+  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-danger').removeClass('alert-success').removeClass('alert-warning');
 }
 function showMsg(msg) {
-  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-success').removeClass('alert-danger');
+  $('#myinfo').text(g_MESSAGES[msg]).addClass('alert-success').removeClass('alert-danger').removeClass('alert-warning');
 }
 
 function getDataFromFirebase(db, ref, cb) {
