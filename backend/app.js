@@ -1,14 +1,8 @@
 const fs      = require('fs');
-const https   = require('https');
 const express = require('express');
-const cors    = require('cors');
-
-var privateKey  = fs.readFileSync('server.key', 'utf8');
-var certificate = fs.readFileSync('server.crt', 'utf8');
-var credentials = { key: privateKey, cert: certificate };
 
 const app = express();
-app.use(cors());
+app.use(express.static('public'))
 
 // MySQL Connection
 var mysql = require('mysql');
@@ -21,7 +15,7 @@ var pool  = mysql.createPool({
 });
 var guard = new RegExp('[a-z0-9]{6}');
 
-app.get('/:deviceid', function (req, res) {
+app.get('/geodata/:deviceid', function (req, res) {
   if(! req.params.deviceid || ! guard.test(req.params.deviceid)) {
     res.send({ "code" : 500, "msg": "invalid device id" });
     return;
@@ -63,7 +57,6 @@ app.get('/:deviceid', function (req, res) {
 
 })
 
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(443, function () {
-  console.log('Example app listening on port 443!')
+app.listen(80, function () {
+  console.log('Example app listening on port 80!')
 })
