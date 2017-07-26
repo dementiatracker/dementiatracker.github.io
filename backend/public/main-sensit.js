@@ -33,13 +33,12 @@ function getMapUpdater(myMap) {
 
     if(myMarker === null) {
       myMarker = myMap.addMarker({
-        label:     'Patient ' + g_PATIENT_ID,
-        lat:       lat,
-        lng:       lng
+        label: 'Patient ' + g_PATIENT_ID,
+        lat:   lat,
+        lng:   lng
       });
     }
 
-    myMap.setCenter(lat, lng);
     myMarker.setPosition(new google.maps.LatLng(lat, lng));
   };
 }
