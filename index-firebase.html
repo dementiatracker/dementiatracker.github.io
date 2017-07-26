@@ -10,8 +10,8 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCffFvsqBs4KuTRjogPnwhpVXMhS4xI23o"></script>
   <script type="text/javascript" src="https://hpneo.github.io/gmaps/gmaps.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-  <script type="text/javascript" src="./main-sensit.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+  <script type="text/javascript" src="./main.js"></script>
 
   <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
@@ -22,12 +22,18 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <div id="myinfo" class="alert alert-warning" role="alert">Loading...</div>
+        <div id="myinfo" class="alert alert-warning" role="alert">Warning! No data yet.</div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
         <div id="mymap" style="width: 100%; padding-top: 62.5%;"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center" style="margin-top: 10px">
+        <button id="btn_out" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-log-out"></span> Get Out</button>
+        <button id="btn_in"  class="btn btn-lg btn-success"><span class="glyphicon glyphicon-log-in"></span> Get In</button>
       </div>
     </div>
   </div>
