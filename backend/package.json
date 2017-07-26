@@ -9,6 +9,7 @@
   "author": "Timothy You",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.15.3",
     "mysql": "^2.14.0"
   }
