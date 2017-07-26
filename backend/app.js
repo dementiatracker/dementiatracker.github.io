@@ -1,5 +1,11 @@
+const fs      = require('fs');
+const https   = require('https');
 const express = require('express');
 const cors    = require('cors');
+
+var privateKey  = fs.readFileSync('server.key', 'utf8');
+var certificate = fs.readFileSync('server.crt', 'utf8');
+var credentials = { key: privateKey, cert: certificate };
 
 const app = express();
 app.use(cors());
@@ -57,6 +63,7 @@ app.get('/:deviceid', function (req, res) {
 
 })
 
-app.listen(80, function () {
-  console.log('Example app listening on port 80!')
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(443, function () {
+  console.log('Example app listening on port 443!')
 })

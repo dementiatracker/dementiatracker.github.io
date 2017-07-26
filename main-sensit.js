@@ -100,7 +100,7 @@ function fitMapBounds(results, timestamps) {
 function getData() {
   var result = {};
 
-  $.getJSON('http://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/' + g_DEVICE_ID)
+  $.getJSON('https://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/' + g_DEVICE_ID)
    .done(function(data) {
      if('code' in data && data['code'] == 200) {
        delete data['code'];
