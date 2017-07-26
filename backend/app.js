@@ -1,5 +1,8 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const cors    = require('cors');
+
+const app = express();
+app.use(cors());
 
 // MySQL Connection
 var mysql = require('mysql');
@@ -19,10 +22,16 @@ app.get('/:deviceid', function (req, res) {
   }
   
   pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLat"', function (latErr, lats, latFields) {
-    if(latErr) throw latErr;
+    if(latErr) {
+      res.send({ "code" : 500, "msg" : "failed to query deviceLat" });
+      return;
+    }
 
     pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLng"', function (lngErr, lngs, lngFields) {
-      if(lngErr) throw lngErr;
+      if(lngErr) {
+        res.send({ "code" : 500, "msg" : "failed to query deviceLng" });
+        return;
+      }
 
       var results = { "code" : 200 };
       for(var i=0, len=lats.length; i < len; i++) {
