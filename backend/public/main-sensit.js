@@ -47,7 +47,7 @@ function showPatientOnMap(updateMap, results, timestamps) {
   var i   = 0;
   var len = timestamps.length;
 
-  var prefix = 'Patient ' + g_PATIENT_ID + ' (with' + timestamps.length + ' data points): ';
+  var prefix = 'Patient ' + g_PATIENT_ID + ' (with ' + timestamps.length + ' data points): ';
 
   var myTimer = setInterval(function() {
     if(i >= len) {
