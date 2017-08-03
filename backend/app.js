@@ -2,7 +2,7 @@ const fs      = require('fs');
 const express = require('express');
 
 const app = express();
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 // MySQL Connection
 var mysql = require('mysql');
@@ -15,19 +15,44 @@ var pool  = mysql.createPool({
 });
 var guard = new RegExp('[a-z0-9]{6}');
 
-app.get('/geodata/:deviceid', function (req, res) {
+app.get('/battery/:deviceid', function(req, res) {
+  if(! req.params.deviceid || ! guard.test(req.params.deviceid)) {
+    res.send({ "code" : 500, "msg": "invalid device id" });
+    return;
+  }
+
+  pool.query('SELECT timestamp, text from ' + req.params.deviceid + '_sensor_data where sensor="data"', function (batErr, bats) {
+    if(batErr) {
+      res.send({ "code" : 500, "msg" : "failed to query battery data" });
+      return;
+    }
+
+    var results = { "code" : 200 };
+    for(var i=0, len=bats.length; i < len; i++) {
+      var bat       = bats[i];
+      var timestamp = bat.timestamp.valueOf();
+
+      if(! (timestamp in results)) { results[timestamp] = {}; }
+      results[timestamp] = bat.text;
+    }
+
+    res.send(results);
+  });
+});
+
+app.get('/geodata/:deviceid', function(req, res) {
   if(! req.params.deviceid || ! guard.test(req.params.deviceid)) {
     res.send({ "code" : 500, "msg": "invalid device id" });
     return;
   }
   
-  pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLat"', function (latErr, lats, latFields) {
+  pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLat"', function (latErr, lats) {
     if(latErr) {
       res.send({ "code" : 500, "msg" : "failed to query deviceLat" });
       return;
     }
 
-    pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLng"', function (lngErr, lngs, lngFields) {
+    pool.query('SELECT timestamp, number from ' + req.params.deviceid + '_sensor_data where sensor="deviceLng"', function (lngErr, lngs) {
       if(lngErr) {
         res.send({ "code" : 500, "msg" : "failed to query deviceLng" });
         return;
@@ -53,10 +78,8 @@ app.get('/geodata/:deviceid', function (req, res) {
       res.send(results);
     });
   });
-
-
-})
+});
 
 app.listen(80, function () {
   console.log('Example app listening on port 80!')
-})
+});

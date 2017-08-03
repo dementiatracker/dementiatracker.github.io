@@ -79,6 +79,45 @@ function fitMapBounds() {
   }
 }
 
+function getBatteryData() {
+  $.getJSON('http://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/battery/' + g_DEVICE_ID)
+   .done(function(data) {
+     if('code' in data && data['code'] == 200) {
+       delete data['code'];
+
+       batteryData       = [];
+       batteryTimestamps = Object.keys(data);
+       batteryTimestamps.sort();
+
+       batteryTimestamps.forEach(function(timestamp) {
+         batteryData.push([ parseInt(timestamp), 100 ]);
+       });
+
+       Highcharts.chart('mybattery', {
+         chart:    { zoomType: 'x' },
+         title:    { text:  'Battery Life for Patient ' + g_PATIENT_ID },
+         subtitle: { text:  document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in' },
+         xAxis:    { type:  'datetime' },
+         yAxis:    { title: { text: 'Battery Life' }, min: 0, max: 100 },
+         legend:   { enabled: false },
+         series:   [{
+           type: 'area',
+           name: 'Battery Life',
+           data: batteryData
+         }]
+       });
+     }
+     else {
+       sendAlarm('Backend error when getting battery info for patient ' + g_PATIENT_ID);
+       return;
+     }
+  })
+  .fail(function() {
+    sendAlarm('Failed to get battery info for patient ' + g_PATIENT_ID);
+    return;
+  });
+}
+
 function getData() {
   showMsg('Loading data for patient' + g_PATIENT_ID);
 
@@ -106,6 +145,8 @@ function getData() {
        }
 
        showPatientOnMap(getCurrentTimeStamp());
+
+       getBatteryData();
      }
      else {
        sendAlarm('Backend error when getting info for patient ' + g_PATIENT_ID);
