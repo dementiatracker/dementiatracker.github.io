@@ -79,6 +79,20 @@ function fitMapBounds() {
   }
 }
 
+function decodeMessage(msg) {
+  if(msg.length < 4) return 0;
+
+  var num = parseInt(msg.substring(0, 4), 16);
+  var b1  = num >> 15 & 1;
+  var b2  = num >> 4  & 1;
+  var b3  = num >> 5  & 1;
+  var b4  = num >> 6  & 1;
+  var b5  = num >> 7  & 1;
+  var bat = (b1 << 4) + (b2 << 3) + (b3 << 2) + (b4 << 1) + b5;
+
+  return bat * 0.05 + 2.7;
+}
+
 function getBatteryData() {
   $.getJSON('http://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/battery/' + g_DEVICE_ID)
    .done(function(data) {
@@ -90,7 +104,8 @@ function getBatteryData() {
        batteryTimestamps.sort();
 
        batteryTimestamps.forEach(function(timestamp) {
-         batteryData.push([ parseInt(timestamp), 100 ]);
+         var item = decodeMessage(data[timestamp]);
+         batteryData.push([ parseInt(timestamp), item ]);
        });
 
        Highcharts.chart('mybattery', {
@@ -98,7 +113,7 @@ function getBatteryData() {
          title:    { text:  'Battery Life for Patient ' + g_PATIENT_ID },
          subtitle: { text:  document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in' },
          xAxis:    { type:  'datetime' },
-         yAxis:    { title: { text: 'Battery Life' }, min: 0, max: 100 },
+         yAxis:    { title: { text: 'Battery Life' }, min: 2.7, max: 4.25 },
          legend:   { enabled: false },
          series:   [{
            type: 'area',
