@@ -82,15 +82,11 @@ function fitMapBounds() {
 function decodeMessage(msg) {
   if(msg.length < 4) return 0;
 
-  var num = parseInt(msg.substring(0, 4), 16);
-  var b1  = num >> 15 & 1;
-  var b2  = num >> 4  & 1;
-  var b3  = num >> 5  & 1;
-  var b4  = num >> 6  & 1;
-  var b5  = num >> 7  & 1;
-  var bat = (b1 << 4) + (b2 << 3) + (b3 << 2) + (b4 << 1) + b5;
+  var byte1 = parseInt(msg.substring(0,2), 16);
+  var byte2 = parseInt(msg.substring(2,4), 16);
 
-  return bat * 0.05 + 2.7;
+  var batBits = ((byte1 >> 7) << 4) + (byte2 & 15);
+  return Math.round(batBits * 0.05 * 2.7 * 100 / 4.25);
 }
 
 function getBatteryData() {
@@ -113,7 +109,7 @@ function getBatteryData() {
          title:    { text:  'Battery Life for Patient ' + g_PATIENT_ID },
          subtitle: { text:  document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in' },
          xAxis:    { type:  'datetime' },
-         yAxis:    { title: { text: 'Battery Life' }, min: 2.7, max: 4.25 },
+         yAxis:    { title: { text: 'Battery Life' }, min: 0, max: 100 },
          legend:   { enabled: false },
          series:   [{
            type: 'area',
