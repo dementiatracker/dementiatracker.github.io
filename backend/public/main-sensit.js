@@ -86,7 +86,11 @@ function decodeMessage(msg) {
   var byte2 = parseInt(msg.substring(2,4), 16);
 
   var batBits = ((byte1 >> 7) << 4) + (byte2 & 15);
-  return Math.round(batBits * 0.05 * 2.7 * 100 / 4.25);
+  var bat     = batBits * 0.05 * 2.7;
+
+  if(bat < 2.7)  bat = 2.7;
+  if(bat > 4.25) bat = 4.25;
+  return Math.round( (bat - 2.7) * 100 / (4.25 - 2.7) );
 }
 
 function getBatteryData() {
@@ -111,6 +115,25 @@ function getBatteryData() {
          xAxis:    { type:  'datetime' },
          yAxis:    { title: { text: 'Battery Life' }, min: 0, max: 100 },
          legend:   { enabled: false },
+         plotOptions: {
+           area:     {
+             fillColor: {
+               linearGradient: {
+                 x1: 0, y1: 0, x2: 0, y2: 1
+               },
+               stops: [
+                 [0, Highcharts.getOptions().colors[0]],
+                 [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+               ]
+             },
+             marker: { radius: 2 },
+             lineWidth: 1,
+             states: {
+               hover: { lineWidth: 2}
+             },
+             threshold: null
+           }
+         },
          series:   [{
            type: 'area',
            name: 'Battery Life',
