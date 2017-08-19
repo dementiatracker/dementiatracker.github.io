@@ -88,9 +88,7 @@ function decodeMessage(msg) {
   var batBits = ((byte1 >> 7) << 4) + (byte2 & 15);
   var bat     = batBits * 0.05 * 2.7;
 
-  if(bat < 2.7)  bat = 2.7;
-  if(bat > 4.25) bat = 4.25;
-  return Math.round( (bat - 2.7) * 100 / (4.25 - 2.7) );
+  return Math.round( bat * 100 ) / 100;
 }
 
 function getBatteryData() {
@@ -113,7 +111,7 @@ function getBatteryData() {
          title:    { text:  'Battery Life for Patient ' + g_PATIENT_ID },
          subtitle: { text:  document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in' },
          xAxis:    { type:  'datetime' },
-         yAxis:    { title: { text: 'Battery Life' }, min: 0, max: 100 },
+         yAxis:    { title: { text: 'Battery Life (Voltage)' }, min: 2.5, max: 4.5 },
          legend:   { enabled: false },
          plotOptions: {
            area:     {
