@@ -111,7 +111,7 @@ function getBatteryData() {
          title:    { text:  'Battery Life for Patient ' + g_PATIENT_ID },
          subtitle: { text:  document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in' },
          xAxis:    { type:  'datetime' },
-         yAxis:    { title: { text: 'Battery Life (Voltage)' }, min: 2.5, max: 4.5 },
+         yAxis:    { title: { text: 'Battery Life (Voltage)' }, min: 0, max: 5 },
          legend:   { enabled: false },
          plotOptions: {
            area:     {
