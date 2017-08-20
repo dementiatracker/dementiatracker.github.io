@@ -2,7 +2,8 @@
 var g_DEVICE_IDS = {
   "T01": "20fc7f",
   "T02": "20fdd2",
-  "T03": "21002c"
+  "T03": "21002c",
+  "T04": "210280"
 };
 var g_PATIENT_ID = null;
 var g_DEVICE_ID  = null;
@@ -86,24 +87,31 @@ function decodeMessage(msg) {
   var byte2 = parseInt(msg.substring(2,4), 16);
 
   var batBits = ((byte1 >> 7) << 4) + (byte2 & 15);
+  var type    = ( byte1 & 96) >> 5;
+
   var bat     = batBits * 0.05 * 2.7;
 
-  return Math.round( bat * 100 ) / 100;
+  return [type == 1, Math.round( bat * 100 ) / 100];
 }
 
-function getBatteryData() {
-  $.getJSON('http://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/battery/' + g_DEVICE_ID)
+function getBatteryAndButtonData() {
+  $.getJSON('http://ec2-34-210-200-155.us-west-2.compute.amazonaws.com/battery_button/' + g_DEVICE_ID)
    .done(function(data) {
      if('code' in data && data['code'] == 200) {
        delete data['code'];
 
-       batteryData       = [];
-       batteryTimestamps = Object.keys(data);
-       batteryTimestamps.sort();
+       timestamps = Object.keys(data);
+       timestamps.sort();
 
-       batteryTimestamps.forEach(function(timestamp) {
+       batteryData = [];
+       buttonData  = [];
+
+       timestamps.forEach(function(timestamp) {
          var item = decodeMessage(data[timestamp]);
-         batteryData.push([ parseInt(timestamp), item ]);
+         if(item[0]) {
+           buttonData.push(parseInt(timestamp));
+         }
+         batteryData.push([ parseInt(timestamp), item[1] ]);
        });
 
        Highcharts.chart('mybattery', {
@@ -138,14 +146,18 @@ function getBatteryData() {
            data: batteryData
          }]
        });
+
+       buttonData.forEach(function(emergencyTime) {
+         $('#mybutton > tbody:last-child').append("<tr><td>" + moment.utc(emergencyTime).format("YYYY-MM-DD HH:mm:ss") + "</td></tr>");
+       });
      }
      else {
-       sendAlarm('Backend error when getting battery info for patient ' + g_PATIENT_ID);
+       sendAlarm('Backend error when getting battery and button info for patient ' + g_PATIENT_ID);
        return;
      }
   })
   .fail(function() {
-    sendAlarm('Failed to get battery info for patient ' + g_PATIENT_ID);
+    sendAlarm('Failed to get battery and button info for patient ' + g_PATIENT_ID);
     return;
   });
 }
@@ -178,7 +190,7 @@ function getData() {
 
        showPatientOnMap(getCurrentTimeStamp());
 
-       getBatteryData();
+       getBatteryAndButtonData();
      }
      else {
        sendAlarm('Backend error when getting info for patient ' + g_PATIENT_ID);

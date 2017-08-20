@@ -15,25 +15,25 @@ var pool  = mysql.createPool({
 });
 var guard = new RegExp('[a-z0-9]{6}');
 
-app.get('/battery/:deviceid', function(req, res) {
+app.get('/battery_button/:deviceid', function(req, res) {
   if(! req.params.deviceid || ! guard.test(req.params.deviceid)) {
     res.send({ "code" : 500, "msg": "invalid device id" });
     return;
   }
 
-  pool.query('SELECT timestamp, text from ' + req.params.deviceid + '_sensor_data where sensor="data"', function (batErr, bats) {
-    if(batErr) {
-      res.send({ "code" : 500, "msg" : "failed to query battery data" });
+  pool.query('SELECT timestamp, text from ' + req.params.deviceid + '_sensor_data where sensor="data"', function (batBtnErr, batBtns) {
+    if(batBtnErr) {
+      res.send({ "code" : 500, "msg" : "failed to query battery and button data" });
       return;
     }
 
     var results = { "code" : 200 };
-    for(var i=0, len=bats.length; i < len; i++) {
-      var bat       = bats[i];
-      var timestamp = bat.timestamp.valueOf();
+    for(var i=0, len=batBtns.length; i < len; i++) {
+      var batBtn    = batBtns[i];
+      var timestamp = batBtn.timestamp.valueOf();
 
       if(! (timestamp in results)) { results[timestamp] = {}; }
-      results[timestamp] = bat.text;
+      results[timestamp] = batBtn.text;
     }
 
     res.send(results);
