@@ -23,7 +23,7 @@ function sendSMS(phone, message) {
         if (error) {
             console.error(error);
         } else {
-            if(response.statusCode !== 200 || body != "success_ok") {
+            if(response.statusCode !== 200 || body.indexOf("success_ok") == -1) {
                 console.error("Failed to do HOIIO request: "+ body);
             } else {
                 console.log("SMS was sent to " + phone);
@@ -62,9 +62,13 @@ exports.handler = (event, context, callback) => {
         // console.log('Event:', JSON.stringify(event, null, 2));
         // console.log('Context:', context);
         
-        if(event.current && event.current.state && event.current.state.reported &&
-           event.current.state.reported.data &&
-           event.current.state.reported.device) {
+        if(event.current  && event.current.state   && event.current.state.reported  &&
+           event.previous && event.previous.state  && event.previous.state.reported &&
+           event.current.state.reported.data       &&
+           event.current.state.reported.device     &&
+           event.current.state.reported.seqNumber  &&
+           event.previous.state.reported.seqNumber &&
+           event.current.state.reported.seqNumber > event.previous.state.reported.seqNumber) {
             var device = event.current.state.reported.device;
             var data   = event.current.state.reported.data;
             // console.log("Found 'data' field:", JSON.stringify(data, null, 2));
@@ -78,7 +82,7 @@ exports.handler = (event, context, callback) => {
                 processData(device, data, null, null);
             }
         } else {
-            console.log("No expected 'data' or 'device' field was found");
+            console.log("No expected 'data' or 'device' field was found OR 'seqNumber' was not increased");
         }
         callback(null);
     } catch(err) {
