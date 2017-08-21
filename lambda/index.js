@@ -63,8 +63,8 @@ exports.handler = (event, context, callback) => {
     console.log("Entering SensitButtonPressed...");
 
     try {
-        // if(event.domain) delete event.domain;
-        // console.log('Event:', JSON.stringify(event, null, 2));
+        if(event.domain) delete event.domain;
+        console.log('Event:', JSON.stringify(event, null, 2));
         // console.log('Context:', context);
         
         if(event.phone    &&
