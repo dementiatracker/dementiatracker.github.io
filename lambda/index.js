@@ -10,7 +10,7 @@ const HOIIO_APP_ID       = "2CZ2EdRbmL0uDDmB";
 const HOIIO_ACCESS_TOKEN = "3gDMuaBD1pUkp6qo";
 
 function sendSMS(phone, message) {
-    if(phone.search(new RegExp("^\d{8}$")) == -1) {
+    if(phone.search(new RegExp("^\\d{8}$")) == -1) {
         console.error("Invalid phone number was given");
         return;
     }
