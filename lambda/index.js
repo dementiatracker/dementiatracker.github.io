@@ -3,7 +3,6 @@
 const querystring = require('querystring');
 const request     = require("request");
 
-const SMS_NUMBER         = "6590050578";
 const GOOGLE_MAP_URL     = "https://maps.google.com/?q=";
 
 const HOIIO_URL          = "https://secure.hoiio.com/open/sms/send?";
@@ -11,6 +10,12 @@ const HOIIO_APP_ID       = "2CZ2EdRbmL0uDDmB";
 const HOIIO_ACCESS_TOKEN = "3gDMuaBD1pUkp6qo";
 
 function sendSMS(phone, message) {
+    if(phone.search(new RegExp("^\d{8}$")) == -1) {
+        console.error("Invalid phone number was given");
+        return;
+    }
+    phone = "65" + phone;
+
     var url = HOIIO_URL + querystring.stringify({
         "app_id":       HOIIO_APP_ID,
         "access_token": HOIIO_ACCESS_TOKEN,
@@ -32,7 +37,7 @@ function sendSMS(phone, message) {
     });
 }
 
-function processData(device, data, lat, lng) {
+function processData(phone, device, data, lat, lng) {
   if(data.length < 2) return;
 
   var byte1 = parseInt(data.substring(0,2), 16);
@@ -48,7 +53,7 @@ function processData(device, data, lat, lng) {
           message = "!!!ALERT!!! " + device + " is calling for help! " + GOOGLE_MAP_URL + lat + "," + lng;
       }
 
-      sendSMS(SMS_NUMBER, message);
+      sendSMS(phone, message);
   } else {
       console.log("button is not pressed, type=" + type + ", device=" + device);
   }
@@ -62,7 +67,8 @@ exports.handler = (event, context, callback) => {
         // console.log('Event:', JSON.stringify(event, null, 2));
         // console.log('Context:', context);
         
-        if(event.current  && event.current.state   && event.current.state.reported  &&
+        if(event.phone    &&
+           event.current  && event.current.state   && event.current.state.reported  &&
            event.previous && event.previous.state  && event.previous.state.reported &&
            event.current.state.reported.data       &&
            event.current.state.reported.device     &&
@@ -75,14 +81,14 @@ exports.handler = (event, context, callback) => {
             
             if(event.current.state.reported.deviceLat &&
                event.current.state.reported.deviceLng) {
-                processData(device, data, 
+                processData(event.phone, device, data, 
                             event.current.state.reported.deviceLat, 
                             event.current.state.reported.deviceLng);
             } else {
-                processData(device, data, null, null);
+                processData(event.phone, device, data, null, null);
             }
         } else {
-            console.log("No expected 'data' or 'device' field was found OR 'seqNumber' was not increased");
+            console.log("'phone', 'data', 'device' or 'seqNumber' field was not found OR 'seqNumber' was not increased");
         }
         callback(null);
     } catch(err) {
